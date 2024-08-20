@@ -33,13 +33,21 @@
 
         // Fonction pour charger les données JSON et ajouter des marqueurs
         fetch('libraries.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Le fichier JSON n\'a pas pu être chargé.');
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Données JSON chargées:', data); // Pour vérifier les données chargées
+
                 data.forEach(function(library) {
                     var marker = L.marker([library.latitude, library.longitude]);
                     marker.bindPopup(`<b>${library.nom}</b><br><img src="${library.imageUrl}" alt="${library.nom}" width="100"><br>ID: ${library.id}`);
                     markers.addLayer(marker); // Ajouter le marqueur au groupe de clusters
                 });
+
                 map.addLayer(markers); // Ajouter le groupe de clusters à la carte
             })
             .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
