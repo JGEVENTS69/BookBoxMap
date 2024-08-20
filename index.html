@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte OpenStreetMap avec Clustering</title>
+    <title>Carte OpenStreetMap avec Clustering et Géolocalisation</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <style>
         #map {
             height: 100vh; /* La carte prendra toute la hauteur de la fenêtre */
+            width: 100vw;  /* La carte prendra toute la largeur de la fenêtre */
         }
     </style>
 </head>
@@ -33,24 +34,56 @@
 
         // Fonction pour charger les données JSON et ajouter des marqueurs
         fetch('libraries.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Le fichier JSON n\'a pas pu être chargé.');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Données JSON chargées:', data); // Pour vérifier les données chargées
+                if (!Array.isArray(data)) {
+                    throw new Error('Les données JSON doivent être un tableau.');
+                }
 
                 data.forEach(function(library) {
-                    var marker = L.marker([library.latitude, library.longitude]);
-                    marker.bindPopup(`<b>${library.nom}</b><br><img src="${library.imageUrl}" alt="${library.nom}" width="100"><br>ID: ${library.id}`);
-                    markers.addLayer(marker); // Ajouter le marqueur au groupe de clusters
+                    if (library.latitude && library.longitude && library.nom) {
+                        var marker = L.marker([library.latitude, library.longitude]);
+                        marker.bindPopup(`
+                            <b>${library.nom}</b><br>
+                            <img src="${library.imageUrl}" alt="${library.nom}" width="100" onerror="this.src='default-image.png';"><br>
+                            ID: ${library.id}
+                        `);
+                        markers.addLayer(marker); // Ajouter le marqueur au groupe de clusters
+                    } else {
+                        console.warn('Données de bibliothèque incomplètes:', library);
+                    }
                 });
 
                 map.addLayer(markers); // Ajouter le groupe de clusters à la carte
             })
             .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
+
+        // Ajouter la fonctionnalité de géolocalisation
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
+
+            // Ajouter un marqueur pour la position de l'utilisateur
+            L.marker(e.latlng).addTo(map)
+                .bindPopup("Vous êtes ici !")
+                .openPopup();
+
+            // Ajouter un cercle pour la précision de la géolocalisation
+            L.circle(e.latlng, radius).addTo(map);
+
+            // Déplacer la carte vers la position de l'utilisateur
+            map.setView(e.latlng, 13); // 13 est le niveau de zoom souhaité
+        }
+
+        function onLocationError(e) {
+            alert(e.message);
+        }
+
+        // Demander la géolocalisation
+        map.locate({ setView: true, maxZoom: 13 });
+
+        // Événements de localisation
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
     </script>
 </body>
 </html>
