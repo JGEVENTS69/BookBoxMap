@@ -26,12 +26,12 @@
         }).addTo(map);
 
         // Fonction pour charger les données JSON et ajouter des marqueurs
-        fetch('boites_a_livres.json')
+        fetch('libraries.json')
             .then(response => response.json())
             .then(data => {
-                data.forEach(function(boite) {
-                    var marker = L.marker([boite.latitude, boite.longitude]).addTo(map);
-                    marker.bindPopup(`<b>${boite.nom}</b><br><img src="${boite.imageUrl}" alt="${boite.nom}" width="100"><br>ID: ${boite.id}`);
+                data.forEach(function(library) {
+                    var marker = L.marker([library.latitude, library.longitude]).addTo(map);
+                    marker.bindPopup(`<b>${library.nom}</b><br><img src="${library.imageUrl}" alt="${library.nom}" width="100"><br>ID: ${library.id}`);
                 });
             })
             .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
