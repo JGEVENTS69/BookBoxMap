@@ -58,12 +58,20 @@
             })
             .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
 
-        // Ajouter la fonctionnalité de géolocalisation
+        // Créer un icône de marqueur orange pour la géolocalisation
+        var orangeIcon = L.icon({
+            iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtY29sb3I9Im9yYW5nZSIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjY2xhcz0icm91bmQiLz4KPC9zdmc+Cg==',
+            iconSize: [30, 30], // Taille de l'icône
+            iconAnchor: [15, 30], // Point d'ancrage pour le marqueur
+            popupAnchor: [0, -30] // Position du popup par rapport au marqueur
+        });
+
+        // Fonction pour charger la géolocalisation
         function onLocationFound(e) {
             var radius = e.accuracy / 2;
 
-            // Ajouter un marqueur pour la position de l'utilisateur
-            L.marker(e.latlng).addTo(map)
+            // Ajouter un marqueur pour la position de l'utilisateur avec l'icône orange
+            L.marker(e.latlng, { icon: orangeIcon }).addTo(map)
                 .bindPopup("Vous êtes ici !")
                 .openPopup();
 
