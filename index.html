@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte OpenStreetMap avec Boîtes à Livres</title>
+    <title>Carte OpenStreetMap avec Clustering</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <style>
         #map {
             height: 100vh; /* La carte prendra toute la hauteur de la fenêtre */
@@ -18,31 +17,32 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script>
-    // Initialisation de la carte et définition de la vue
-    var map = L.map('map').setView([46.6038236, 5.5142651], 6); // Coordonnées pour centrer la carte sur la France
+        // Initialisation de la carte et définition de la vue
+        var map = L.map('map').setView([46.6038236, 5.5142651], 6); // Coordonnées pour centrer la carte sur la France
 
-    // Ajout des tuiles OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        // Ajout des tuiles OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-    // Créer un groupe de clusters
-    var markers = L.markerClusterGroup();
+        // Créer un groupe de clusters
+        var markers = L.markerClusterGroup();
 
-    // Fonction pour charger les données JSON et ajouter des marqueurs
-    fetch('libraries.json')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(function(library) {
-                var marker = L.marker([library.latitude, library.longitude]);
-                marker.bindPopup(`<b>${library.nom}</b><br><img src="${library.imageUrl}" alt="${library.nom}" width="100"><br>ID: ${library.id}`);
-                markers.addLayer(marker); // Ajouter le marqueur au groupe de clusters
-            });
-            map.addLayer(markers); // Ajouter le groupe de clusters à la carte
-        })
-        .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
-</script>
+        // Fonction pour charger les données JSON et ajouter des marqueurs
+        fetch('libraries.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(function(library) {
+                    var marker = L.marker([library.latitude, library.longitude]);
+                    marker.bindPopup(`<b>${library.nom}</b><br><img src="${library.imageUrl}" alt="${library.nom}" width="100"><br>ID: ${library.id}`);
+                    markers.addLayer(marker); // Ajouter le marqueur au groupe de clusters
+                });
+                map.addLayer(markers); // Ajouter le groupe de clusters à la carte
+            })
+            .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
+    </script>
 </body>
 </html>
