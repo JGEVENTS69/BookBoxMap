@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte OpenStreetMap</title>
+    <title>Carte OpenStreetMap avec Boîtes à Livres</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <style>
         #map {
@@ -17,7 +17,7 @@
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
         // Initialisation de la carte et définition de la vue
-        var map = L.map('map').setView([48.8566, 2.3522], 13); // Coordonnées pour Paris
+        var map = L.map('map').setView([46.6038236, 5.5142651], 6); // Coordonnées pour centrer la carte sur la France
 
         // Ajout des tuiles OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -25,10 +25,16 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Ajout d'un marqueur sur la carte
-        var marker = L.marker([48.8566, 2.3522]).addTo(map)
-            .bindPopup('Paris, France')
-            .openPopup();
+        // Fonction pour charger les données JSON et ajouter des marqueurs
+        fetch('boites_a_livres.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(function(boite) {
+                    var marker = L.marker([boite.latitude, boite.longitude]).addTo(map);
+                    marker.bindPopup(`<b>${boite.nom}</b><br><img src="${boite.imageUrl}" alt="${boite.nom}" width="100"><br>ID: ${boite.id}`);
+                });
+            })
+            .catch(error => console.error('Erreur lors du chargement du fichier JSON:', error));
     </script>
 </body>
 </html>
